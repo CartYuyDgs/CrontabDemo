@@ -6,5 +6,9 @@
   "apiReadTimeOut":5000,
 
   "API接口写超时":"单位毫秒",
-  "apiWriteTimeOut":5000
+  "apiWriteTimeOut":5000,
+
+  "etcdEndPoints": ["192.168.31.204:2379"],
+
+  "etcdDialTimeout": 5000
 }
