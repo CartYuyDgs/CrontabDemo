@@ -105,6 +105,30 @@ ERR:
 
 }
 
+func handlerJobKill(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var name string
+	var bytes []byte
+
+	if err = r.ParseForm(); err != nil {
+		goto ERR
+	}
+	name = r.PostForm.Get("name")
+	if err = G_JobMgr.KillJob(name); err != nil {
+		goto ERR
+	}
+
+	if bytes, err = common.BuildResponse(0, "success", nil); err == nil {
+		w.Write(bytes)
+	}
+	return
+
+ERR:
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		w.Write(bytes)
+	}
+}
+
 var (
 	//单例对象
 	GapiServer *ApiServer
@@ -121,6 +145,7 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/save", handlerJobSave)
 	mux.HandleFunc("/job/del", handlerJobDelete)
 	mux.HandleFunc("/job/joblist", handlerJobList)
+	mux.HandleFunc("/job/jobkill", handlerJobKill)
 
 	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_Config.ApiPort)); err != nil {
 		return
