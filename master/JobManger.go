@@ -55,7 +55,7 @@ func (jobMgr *JobMgr) SaveJob(job *common.Job) (oldJob *common.Job, err error) {
 	var putResp *clientv3.PutResponse
 	var oldJobObj common.Job
 
-	jobKey = "/corn/jobs/" + job.Name
+	jobKey = common.JobSaveDir + job.Name
 	if jobValue, err = json.Marshal(job); err != nil {
 		return
 	}
@@ -80,7 +80,7 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 	var delResp *clientv3.DeleteResponse
 	var oldObj common.Job
 
-	jobKey = "/corn/jobs/" + name
+	jobKey = common.JobSaveDir + name
 
 	if delResp, err = jobMgr.kv.Delete(context.TODO(), jobKey, clientv3.WithPrevKV()); err != nil {
 		return
