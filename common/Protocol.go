@@ -13,7 +13,7 @@ type Job struct {
 type Response struct {
 	Erron int         `json:"erron"`
 	Msg   string      `json:"msg"`
-	data  interface{} `json:"data"`
+	Data  interface{} `json:"data"`
 }
 
 func BuildResponse(erron int, msg string, data interface{}) (resp []byte, err error) {
@@ -22,7 +22,7 @@ func BuildResponse(erron int, msg string, data interface{}) (resp []byte, err er
 
 	res.Erron = erron
 	res.Msg = msg
-	res.data = data
+	res.Data = data
 
 	//序列化
 	resp, err = json.Marshal(res)

@@ -1,1 +1,4 @@
-nohub ./etcd --listen-client-urls 'http://127.0.0.1:2379' -advertise-client-urls 'http://127.0.0.1:2379' &
+#启动服务
+nohub ./etcd --listen-client-urls 'http://0.0.0.0:2379' -advertise-client-urls 'http://0.0.0.0:2379' &
+#查看信息
+ETCDCTL_API=3 ./etcdctl get "/corn/jobs" --prefix
