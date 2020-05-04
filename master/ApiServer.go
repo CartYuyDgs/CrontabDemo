@@ -51,6 +51,38 @@ ERR:
 	fmt.Println(err)
 }
 
+//post /job/del name=job1
+func handlerJobDelete(w http.ResponseWriter, r *http.Request) {
+	var (
+		err    error
+		name   string
+		oldJob *common.Job
+		bytes  []byte
+	)
+
+	if err = r.ParseForm(); err != nil {
+		goto ERR
+	}
+
+	name = r.PostForm.Get("name")
+	fmt.Println(name)
+
+	if oldJob, err = G_JobMgr.DeleteJob(name); err != nil {
+		goto ERR
+	}
+
+	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
+		w.Write(bytes)
+	}
+	return
+
+ERR:
+	if bytes, err = common.BuildResponse(-1, err.Error(), oldJob); err == nil {
+		w.Write(bytes)
+	}
+	return
+}
+
 var (
 	//单例对象
 	GapiServer *ApiServer
@@ -65,6 +97,7 @@ func InitApiServer() (err error) {
 
 	mux = http.NewServeMux()
 	mux.HandleFunc("/job/save", handlerJobSave)
+	mux.HandleFunc("/job/del", handlerJobDelete)
 
 	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_Config.ApiPort)); err != nil {
 		return
