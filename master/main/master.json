@@ -10,5 +10,7 @@
 
   "etcdEndPoints": ["192.168.31.204:2379"],
 
-  "etcdDialTimeout": 5000
+  "etcdDialTimeout": 5000,
+
+  "webroot": "./webroot"
 }

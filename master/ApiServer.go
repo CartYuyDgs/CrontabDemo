@@ -149,7 +149,7 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/joblist", handlerJobList)
 	mux.HandleFunc("/job/jobkill", handlerJobKill)
 
-	staticDir = http.Dir("./webroot")
+	staticDir = http.Dir(G_Config.Webroot)
 	staticHandler = http.FileServer(staticDir)
 	mux.Handle("/", staticHandler)
 
