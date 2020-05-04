@@ -18,6 +18,7 @@ var (
 	G_JobMgr *JobMgr
 )
 
+//初始化
 func InitJobMgr() (err error) {
 	var (
 		config clientv3.Config
