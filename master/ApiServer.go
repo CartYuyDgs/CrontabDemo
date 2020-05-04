@@ -136,9 +136,11 @@ var (
 
 func InitApiServer() (err error) {
 	var (
-		mux        *http.ServeMux
-		listener   net.Listener
-		httpserver *http.Server
+		mux           *http.ServeMux
+		listener      net.Listener
+		httpserver    *http.Server
+		staticDir     http.Dir
+		staticHandler http.Handler
 	)
 
 	mux = http.NewServeMux()
@@ -146,6 +148,10 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/del", handlerJobDelete)
 	mux.HandleFunc("/job/joblist", handlerJobList)
 	mux.HandleFunc("/job/jobkill", handlerJobKill)
+
+	staticDir = http.Dir("./webroot")
+	staticHandler = http.FileServer(staticDir)
+	mux.Handle("/", staticHandler)
 
 	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_Config.ApiPort)); err != nil {
 		return
