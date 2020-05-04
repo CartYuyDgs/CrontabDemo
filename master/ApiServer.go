@@ -83,6 +83,28 @@ ERR:
 	return
 }
 
+func handlerJobList(w http.ResponseWriter, r *http.Request) {
+	var jobList []*common.Job
+	var err error
+	var bytes []byte
+
+	if jobList, err = G_JobMgr.ListJob(); err != nil {
+		goto ERR
+	}
+
+	if bytes, err = common.BuildResponse(0, "success", jobList); err == nil {
+		w.Write(bytes)
+	}
+
+	return
+
+ERR:
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		w.Write(bytes)
+	}
+
+}
+
 var (
 	//单例对象
 	GapiServer *ApiServer
@@ -98,6 +120,7 @@ func InitApiServer() (err error) {
 	mux = http.NewServeMux()
 	mux.HandleFunc("/job/save", handlerJobSave)
 	mux.HandleFunc("/job/del", handlerJobDelete)
+	mux.HandleFunc("/job/joblist", handlerJobList)
 
 	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_Config.ApiPort)); err != nil {
 		return

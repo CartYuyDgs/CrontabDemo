@@ -95,3 +95,29 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 
 	return
 }
+
+func (jobMgr *JobMgr) ListJob() (jobList []*common.Job, err error) {
+	var dirKey string
+	var getResp *clientv3.GetResponse
+	//var kvPair *mvccpb.KeyValue
+	var job *common.Job
+
+	dirKey = common.JobSaveDir
+
+	if getResp, err = jobMgr.kv.Get(context.TODO(), dirKey, clientv3.WithPrefix()); err != nil {
+		return
+	}
+	jobList = make([]*common.Job, 0)
+
+	for _, kvPair := range getResp.Kvs {
+		job = &common.Job{}
+		if err = json.Unmarshal(kvPair.Value, job); err != nil {
+			err = nil
+			continue
+		}
+
+		jobList = append(jobList, job)
+	}
+
+	return
+}
