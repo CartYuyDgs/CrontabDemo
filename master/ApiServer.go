@@ -65,7 +65,7 @@ func handlerJobDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name = r.PostForm.Get("name")
-	fmt.Println(name)
+	//fmt.Println(name)
 
 	if oldJob, err = G_JobMgr.DeleteJob(name); err != nil {
 		goto ERR
