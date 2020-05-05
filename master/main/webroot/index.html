@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="page-header">
-                    <button type="button" class="btn btn-primary">新建任务</button>
+                    <button id="new-job" type="button" class="btn btn-primary">新建任务</button>
                 </div>
             </div>
         </div>
@@ -125,6 +125,14 @@
                         window.location.reload()
                     }
                 })
+            })
+
+            $("#new-job").on("click", function () {
+                $("#edit-name").val("")
+                $("#edit-command").val("")
+                $("#edit-CronExpr").val("")
+
+                $("#edit-model").modal("show")
             })
 
             function rebuildJoblist() {
