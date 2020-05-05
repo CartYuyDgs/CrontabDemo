@@ -29,7 +29,7 @@
             <div class="col-md-12">
                 <div class="panel panel-default" style="margin-top: 20px">
                     <div class="panel-body">
-                        <table class="table table-striped">
+                        <table id="tablelist" class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>任务</th>
@@ -39,18 +39,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="job-name">job1</td>
-                                    <td class="job-command">job1Command</td>
-                                    <td class="job-CronExpr">jobCorn</td>
-                                    <td>
-                                        <div class="btn-toolbar">
-                                            <button class="btn btn-info">编辑</button>
-                                            <button class="btn btn-danger">删除</button>
-                                            <button class="btn btn-warning">强杀</button>
-                                        </div>
-                                    </td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
@@ -58,5 +47,51 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $("#tablelist").on("click",".edit-job",function (event) {
+                console.log(event)
+            })
+
+            $("#tablelist").on("click",".delete-job",function (event) {
+                console.log(event)
+            })
+
+            $("#tablelist").on("click",".kill-job",function (event) {
+                console.log(event)
+            })
+
+            function rebuildJoblist() {
+                $.ajax({
+                    url:'/job/joblist',
+                    dataType:'json',
+                    success: function (resp) {
+                        if (resp.erron != 0) {
+                            return
+                        }
+                        else {
+                            var jobList = resp.data
+                            $("tablelist tbody").empty()
+                            for (var i =0; i < jobList.length; ++i) {
+                                var job = jobList[i];
+                                var tr=$("<tr>")
+                                tr.append($('<td class="job-name">').html(job.name))
+                                tr.append($('<td class="job-command">').html(job.command))
+                                tr.append($('<td class="job-CronExpr">').html(job.cronExpr))
+                                var toolbar = $('<div class="btn-toolbar">')
+                                    .append('<button class="btn btn-info edit-job">编辑</button>')
+                                    .append('<button class="btn btn-danger delete-job">删除</button>')
+                                    .append('<button class="btn btn-warning kill-job">强杀</button>')
+                                tr.append($('<td>').append(toolbar))
+                                $("#tablelist tbody").append(tr)
+                            }
+                        }
+                    }
+                })
+            }
+
+            rebuildJoblist()
+        })
+    </script>
 </body>
 </html>
