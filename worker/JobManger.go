@@ -1,7 +1,10 @@
 package worker
 
 import (
+	"CrontabDemo/common"
+	"context"
 	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 	"time"
 )
 
@@ -16,6 +19,27 @@ var (
 )
 
 //监听任务变化
+func (jobMgr *JobMgr) watchJobs(err error) {
+	var (
+		getReps *clientv3.GetResponse
+		kvpair  *mvccpb.KeyValue
+		job     *common.Job
+	)
+	//1.get /cron/jobs目录下的任务，获取当前集群的revision
+	if getReps, err = jobMgr.kv.Get(context.TODO(), common.JobSaveDir, clientv3.WithPrefix()); err != nil {
+		return
+	}
+
+	for _, kvpair = range getReps.Kvs {
+		job, err = common.UnpackJob(kvpair.Value)
+		if err == nil {
+			//TODO:
+		}
+
+	}
+	job = job
+	return
+}
 
 //初始化
 func InitJobMgr() (err error) {
