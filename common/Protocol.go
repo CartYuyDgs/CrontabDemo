@@ -1,6 +1,9 @@
 package common
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 type Job struct {
 	Name     string `json:"name"`
@@ -43,4 +46,22 @@ func UnpackJob(value []byte) (ret *Job, err error) {
 
 	ret = job
 	return
+}
+
+func ExtractJobName(jobKey string) string {
+	return strings.TrimPrefix(jobKey, JobSaveDir)
+}
+
+//任务变化事件
+
+type JobEvent struct {
+	EventType int
+	job       *Job
+}
+
+func BuildJobEvent(eventType int, job *Job) (jobEvent *JobEvent) {
+	return &JobEvent{
+		EventType: eventType,
+		job:       job,
+	}
 }
