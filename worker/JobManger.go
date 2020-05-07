@@ -45,7 +45,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 		if err == nil {
 			//TODO:
 			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
-			fmt.Println(*jobEvent)
+			fmt.Println("save--1", *jobEvent)
 		}
 
 	}
@@ -62,13 +62,13 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 					}
 					//TODO:反序列化 推给scheduler
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
-					fmt.Println(*jobEvent)
+					fmt.Println("save--2", *jobEvent)
 				case mvccpb.DELETE:
 					jobName = common.ExtractJobName(string(watchEvent.Kv.Key))
 					job = &common.Job{Name: jobName}
 					//TODO: 推一个删除事件给scheduler
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE, job)
-					fmt.Println(*jobEvent)
+					fmt.Println("delete--2", *jobEvent)
 				}
 
 			}
