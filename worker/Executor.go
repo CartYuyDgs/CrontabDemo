@@ -33,6 +33,7 @@ func (exector *Exector) ExectorJob(info *common.JobExecuteInfo) {
 
 		resutl.StartTime = time.Now()
 		//执行shell
+		time.Sleep(time.Duration(1000) * time.Millisecond)
 		err = jobLock.TryLock()
 		defer jobLock.UnLock()
 
