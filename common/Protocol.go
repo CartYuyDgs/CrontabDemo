@@ -20,6 +20,13 @@ type JobSchdulePlan struct {
 	NextTime time.Time
 }
 
+//执行状态
+type JobExecuteInfo struct {
+	Job      *Job //任务信息
+	PlanTime time.Time
+	RealTime time.Time
+}
+
 //http interface response
 
 type Response struct {
@@ -88,6 +95,15 @@ func BuildJobSchedulePlan(job *Job) (jobSchedulaPlan *JobSchdulePlan, err error)
 		Job:      job,
 		Expr:     expr,
 		NextTime: expr.Next(time.Now()),
+	}
+	return
+}
+
+func BuildJobExecuteInfo(jobScjedulePlan *JobSchdulePlan) (jobExecuteInfo *JobExecuteInfo) {
+	jobExecuteInfo = &JobExecuteInfo{
+		Job:      jobScjedulePlan.Job,
+		PlanTime: jobScjedulePlan.NextTime,
+		RealTime: time.Now(),
 	}
 	return
 }
