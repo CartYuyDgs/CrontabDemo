@@ -3,7 +3,6 @@ package worker
 import (
 	"CrontabDemo/common"
 	"context"
-	"fmt"
 	"os/exec"
 	"time"
 )
@@ -17,10 +16,11 @@ var (
 
 func (exector *Exector) ExectorJob(info *common.JobExecuteInfo) {
 	var (
-		cmd    *exec.Cmd
-		err    error
-		outPut []byte
-		resutl *common.JobExecuteResult
+		cmd     *exec.Cmd
+		err     error
+		outPut  []byte
+		resutl  *common.JobExecuteResult
+		jobLock *JobLock
 	)
 	go func() {
 
@@ -28,16 +28,27 @@ func (exector *Exector) ExectorJob(info *common.JobExecuteInfo) {
 			ExecuteInfo: info,
 			Output:      make([]byte, 0),
 		}
+		//获取分布式锁
+		jobLock = G_JobMgr.CreateJobLock(info.Job.Name)
+
 		resutl.StartTime = time.Now()
 		//执行shell
-		fmt.Println(info.Job.Command)
-		cmd = exec.CommandContext(context.TODO(), "c:\\cygwin64\\bin\\bash.exe", "-c", info.Job.Command)
-		outPut, err = cmd.CombinedOutput()
+		err = jobLock.TryLock()
+		defer jobLock.UnLock()
 
-		resutl.EndTime = time.Now()
-		//结果返回
-		resutl.Output = outPut
-		resutl.Err = err
+		if err != nil {
+			resutl.Err = err
+			resutl.EndTime = time.Now()
+		} else {
+			resutl.StartTime = time.Now()
+			cmd = exec.CommandContext(context.TODO(), "c:\\cygwin64\\bin\\bash.exe", "-c", info.Job.Command)
+			outPut, err = cmd.CombinedOutput()
+
+			resutl.EndTime = time.Now()
+			//结果返回
+			resutl.Output = outPut
+			resutl.Err = err
+		}
 
 		G_Scheduler.PushJobResult(resutl)
 
