@@ -1,0 +1,17 @@
+crontab
+
+--->/master
+--->/worker
+--->/common
+
+
+master:
+    1.搭建GO项目框架，配置文件，命令行参数，线程配置
+    2.提供web后台的API，用于管理job
+    3.前端页面
+worker:
+    1.从etcd中吧job同步到内存
+    2.实现调度模块，基于cron表达式调度N个job
+    3.实现执行模块，并行执行多个job
+    4.对job实行分布式锁，防止集群并发
+    5.保存执行日志到mongodb
