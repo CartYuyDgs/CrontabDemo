@@ -26,6 +26,13 @@ type JobExecuteInfo struct {
 	PlanTime time.Time
 	RealTime time.Time
 }
+type JobExecuteResult struct {
+	ExecuteInfo *JobExecuteInfo
+	Output      []byte
+	Err         error
+	StartTime   time.Time
+	EndTime     time.Time
+}
 
 //http interface response
 

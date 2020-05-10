@@ -10,6 +10,7 @@ type Scheduler struct {
 	jobEventChan      chan *common.JobEvent             //事件队列
 	jobPlanTable      map[string]*common.JobSchdulePlan //调度计划表
 	jobExecutingTable map[string]*common.JobExecuteInfo
+	jobResultChan     chan *common.JobExecuteResult
 }
 
 var G_Scheduler *Scheduler
@@ -19,6 +20,7 @@ func InitScheduler() (err error) {
 		jobEventChan:      make(chan *common.JobEvent, 1000),
 		jobPlanTable:      make(map[string]*common.JobSchdulePlan),
 		jobExecutingTable: make(map[string]*common.JobExecuteInfo),
+		jobResultChan:     make(chan *common.JobExecuteResult, 1000),
 	}
 	go G_Scheduler.schedulerLoop()
 	return nil
@@ -40,8 +42,8 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchdulePlan) {
 	scheduler.jobExecutingTable[jobPlan.Job.Name] = jobexecuteInfo
 
 	//执行任务
-	//TODO:
-	fmt.Println("执行任务：", jobexecuteInfo.Job.Name, jobexecuteInfo.RealTime, jobexecuteInfo.PlanTime)
+	G_Exector.ExectorJob(jobexecuteInfo)
+	//fmt.Println("执行任务：", jobexecuteInfo.Job.Name, jobexecuteInfo.RealTime, jobexecuteInfo.PlanTime)
 
 	return
 }
@@ -64,7 +66,7 @@ func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 		if jobPlan.NextTime.Before(now) || jobPlan.NextTime.Equal(now) {
 			//尝试执行任务
 			scheduler.TryStartJob(jobPlan)
-			fmt.Println("执行任务：" + jobPlan.Job.Name)
+			//fmt.Println("执行任务：" + jobPlan.Job.Name)
 			jobPlan.NextTime = jobPlan.Expr.Next(now)
 		}
 
@@ -74,10 +76,14 @@ func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 		}
 	}
 	//过期的任务立即执行
-
 	//统计最近要过期的任务时间
 	scheduleAfter = (*nearTime).Sub(now)
 	return
+}
+
+func (scheduler *Scheduler) HandlerJobResult(result *common.JobExecuteResult) {
+	delete(scheduler.jobExecutingTable, result.ExecuteInfo.Job.Name)
+	fmt.Println("任务执行完成....", result.ExecuteInfo.Job.Name, string(result.Output), result.Err)
 }
 
 //处理任务事件
@@ -106,6 +112,7 @@ func (scheduler *Scheduler) schedulerLoop() {
 		jobEvent      *common.JobEvent
 		scheduleAfter time.Duration
 		scheduleTimer *time.Timer
+		jobResult     *common.JobExecuteResult
 	)
 	scheduleAfter = scheduler.TrySchedule()
 
@@ -116,6 +123,8 @@ func (scheduler *Scheduler) schedulerLoop() {
 		case jobEvent = <-scheduler.jobEventChan:
 			scheduler.handleJobEvent(jobEvent)
 		case <-scheduleTimer.C:
+		case jobResult = <-scheduler.jobResultChan:
+			scheduler.HandlerJobResult(jobResult)
 
 		}
 		scheduleAfter = scheduler.TrySchedule()
@@ -126,4 +135,9 @@ func (scheduler *Scheduler) schedulerLoop() {
 //推送任务变化事件
 func (scheduler *Scheduler) PushJobEvent(jobEvent *common.JobEvent) {
 	scheduler.jobEventChan <- jobEvent
+}
+
+//回传
+func (scheduler *Scheduler) PushJobResult(jobResult *common.JobExecuteResult) {
+	scheduler.jobResultChan <- jobResult
 }
