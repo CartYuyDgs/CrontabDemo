@@ -1,5 +1,9 @@
 {
   "etcdEndPoints": ["192.168.31.205:2379"],
 
-  "etcdDialTimeout": 5000
+  "etcdDialTimeout": 5000,
+
+  "mondbUri": "mongodb://192.168.31.205:27017",
+
+  "mongoTimeout": 5000
 }

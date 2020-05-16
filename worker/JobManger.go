@@ -145,7 +145,6 @@ func (jobMgr *JobMgr) watchKiller() {
 			for _, watchEvent = range watchResp.Events {
 				switch watchEvent.Type {
 				case mvccpb.PUT:
-					fmt.Println("kill-----------------")
 					jobName = common.ExtractJobKillName(string(watchEvent.Kv.Key))
 					job = &common.Job{Name: jobName}
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_KILL, job)

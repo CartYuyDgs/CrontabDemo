@@ -33,6 +33,10 @@ func main() {
 		goto ERR
 	}
 
+	if err = worker.InitLogSink(); err != nil {
+		goto ERR
+	}
+
 	if err = worker.InitScheduler(); err != nil {
 		goto ERR
 	}
