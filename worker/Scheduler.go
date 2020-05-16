@@ -90,6 +90,8 @@ func (scheduler *Scheduler) HandlerJobResult(result *common.JobExecuteResult) {
 func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	var (
 		jobSchedulePlan *common.JobSchdulePlan
+		jobExecuteInfo  *common.JobExecuteInfo
+		jobExecuting    bool
 		jobExited       bool
 		err             error
 	)
@@ -104,7 +106,13 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 		if jobSchedulePlan, jobExited = scheduler.jobPlanTable[jobEvent.Job.Name]; jobExited {
 			delete(scheduler.jobPlanTable, jobEvent.Job.Name)
 		}
+	case common.JOB_EVENT_KILL:
+		if jobExecuteInfo, jobExecuting = scheduler.jobExecutingTable[jobEvent.Job.Name]; jobExecuting {
+			jobExecuteInfo.CancleFunc()
+		}
+
 	}
+
 }
 
 func (scheduler *Scheduler) schedulerLoop() {

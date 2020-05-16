@@ -115,6 +115,8 @@ func InitJobMgr() (err error) {
 
 	G_JobMgr.watchJobs()
 
+	//启动监听killer
+	G_JobMgr.watchKiller()
 	return
 }
 
@@ -124,4 +126,35 @@ func (jobMgr *JobMgr) CreateJobLock(jobName string) (jobLock *JobLock) {
 	//返回一把锁
 	jobLock = InitJobLock(jobName, jobMgr.kv, jobMgr.lease)
 	return
+}
+
+func (jobMgr *JobMgr) watchKiller() {
+	var (
+		watchChan  clientv3.WatchChan
+		watchResp  clientv3.WatchResponse
+		watchEvent *clientv3.Event
+		jobName    string
+		job        *common.Job
+		jobEvent   *common.JobEvent
+	)
+	go func() {
+		//watchStartRevision = getReps.Header.Revision + 1
+		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JobKill, clientv3.WithPrefix()) //监听
+
+		for watchResp = range watchChan {
+			for _, watchEvent = range watchResp.Events {
+				switch watchEvent.Type {
+				case mvccpb.PUT:
+					fmt.Println("kill-----------------")
+					jobName = common.ExtractJobKillName(string(watchEvent.Kv.Key))
+					job = &common.Job{Name: jobName}
+					jobEvent = common.BuildJobEvent(common.JOB_EVENT_KILL, job)
+					G_Scheduler.PushJobEvent(jobEvent)
+				case mvccpb.DELETE:
+
+				}
+
+			}
+		}
+	}()
 }

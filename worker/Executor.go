@@ -2,7 +2,6 @@ package worker
 
 import (
 	"CrontabDemo/common"
-	"context"
 	"os/exec"
 	"time"
 )
@@ -42,7 +41,7 @@ func (exector *Exector) ExectorJob(info *common.JobExecuteInfo) {
 			resutl.EndTime = time.Now()
 		} else {
 			resutl.StartTime = time.Now()
-			cmd = exec.CommandContext(context.TODO(), "c:\\cygwin64\\bin\\bash.exe", "-c", info.Job.Command)
+			cmd = exec.CommandContext(info.CancelCtx, "c:\\cygwin64\\bin\\bash.exe", "-c", info.Job.Command)
 			outPut, err = cmd.CombinedOutput()
 
 			resutl.EndTime = time.Now()

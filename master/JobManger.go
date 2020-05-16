@@ -80,9 +80,7 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 	var jobKey string
 	var delResp *clientv3.DeleteResponse
 	var oldObj common.Job
-
 	jobKey = common.JobSaveDir + name
-
 	if delResp, err = jobMgr.kv.Delete(context.TODO(), jobKey, clientv3.WithPrevKV()); err != nil {
 		return
 	}

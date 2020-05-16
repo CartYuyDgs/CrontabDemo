@@ -6,3 +6,4 @@ const JobKill = "/cron/killer/"
 
 const JOB_EVENT_SAVE = 1
 const JOB_EVENT_DELETE = 2
+const JOB_EVENT_KILL = 3

@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gorhill/cronexpr"
 	"strings"
@@ -22,9 +23,11 @@ type JobSchdulePlan struct {
 
 //执行状态
 type JobExecuteInfo struct {
-	Job      *Job //任务信息
-	PlanTime time.Time
-	RealTime time.Time
+	Job        *Job //任务信息
+	PlanTime   time.Time
+	RealTime   time.Time
+	CancelCtx  context.Context
+	CancleFunc context.CancelFunc
 }
 type JobExecuteResult struct {
 	ExecuteInfo *JobExecuteInfo
@@ -75,6 +78,10 @@ func ExtractJobName(jobKey string) string {
 	return strings.TrimPrefix(jobKey, JobSaveDir)
 }
 
+func ExtractJobKillName(killKey string) string {
+	return strings.TrimPrefix(killKey, JobKill)
+}
+
 //任务变化事件
 
 type JobEvent struct {
@@ -112,5 +119,6 @@ func BuildJobExecuteInfo(jobScjedulePlan *JobSchdulePlan) (jobExecuteInfo *JobEx
 		PlanTime: jobScjedulePlan.NextTime,
 		RealTime: time.Now(),
 	}
+	jobExecuteInfo.CancelCtx, jobExecuteInfo.CancleFunc = context.WithCancel(context.TODO())
 	return
 }
