@@ -49,6 +49,9 @@ type JobLog struct {
 }
 
 //日志批次
+type LogBatch struct {
+	Logs []interface{}
+}
 
 //http interface response
 

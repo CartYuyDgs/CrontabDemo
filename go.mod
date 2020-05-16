@@ -20,6 +20,7 @@ require (
 	//go.etcd.io/etcd v3.3.19+incompatible
 	go.mongodb.org/mongo-driver v1.3.2
 	go.uber.org/zap v1.14.1 // indirect
+	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
 	google.golang.org/grpc v1.26.0 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 )
