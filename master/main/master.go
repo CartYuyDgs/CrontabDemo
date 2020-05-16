@@ -33,6 +33,10 @@ func main() {
 		goto ERR
 	}
 
+	if err = master.InitLogManger(); err != nil {
+		goto ERR
+	}
+
 	if err = master.InitJobMgr(); err != nil {
 		goto ERR
 	}
@@ -40,6 +44,7 @@ func main() {
 	if err = master.InitApiServer(); err != nil {
 		goto ERR
 	}
+
 	for {
 		time.Sleep(1 * time.Second)
 	}

@@ -31,12 +31,13 @@ func InitLogSink() (err error) {
 	//	fmt.Println("++++++++++++",err)
 	//	return
 	//}
-	fmt.Println(G_Config.MongodbUri)
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	//fmt.Println(G_Config.MongodbUri)
+	ctx, _ := context.WithTimeout(context.Background(), time.Duration(G_Config.MongoTimeout)*time.Millisecond)
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(G_Config.MongodbUri))
 	if err != nil {
 		return
 	}
+
 	//选择db和collection
 	G_logSink = &LogSink{
 		client:         client,

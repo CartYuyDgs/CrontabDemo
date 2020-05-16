@@ -53,6 +53,14 @@ type LogBatch struct {
 	Logs []interface{}
 }
 
+type JobLogFilter struct {
+	JobName string `bson:"jobName"`
+}
+
+type SortLogByStartTime struct {
+	SortOrder int `bson:"startTime"`
+}
+
 //http interface response
 
 type Response struct {

@@ -129,6 +129,46 @@ ERR:
 	}
 }
 
+func handlerJobLog(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var name string
+	var skipParam string
+	var limitParam string
+	var skip int
+	var limit int
+	var bytes []byte
+	var logArr []*common.JobLog
+
+	if err = r.ParseForm(); err != nil {
+		goto ERR
+	}
+	name = r.Form.Get("name")
+	skipParam = r.Form.Get("skip")
+	limitParam = r.Form.Get("limit")
+
+	if skip, err = strconv.Atoi(skipParam); err != nil {
+		skip = 0
+	}
+
+	if limit, err = strconv.Atoi(limitParam); err != nil {
+		limit = 20
+	}
+
+	if logArr, err = G_logMgr.ListLog(name, skip, limit); err != nil {
+		goto ERR
+	}
+
+	if bytes, err = common.BuildResponse(0, "success", logArr); err == nil {
+		w.Write(bytes)
+	}
+	return
+
+ERR:
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		w.Write(bytes)
+	}
+}
+
 var (
 	//单例对象
 	GapiServer *ApiServer
@@ -148,6 +188,7 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/del", handlerJobDelete)
 	mux.HandleFunc("/job/joblist", handlerJobList)
 	mux.HandleFunc("/job/jobkill", handlerJobKill)
+	mux.HandleFunc("/job/log", handlerJobLog)
 
 	staticDir = http.Dir(G_Config.Webroot)
 	staticHandler = http.FileServer(staticDir)
