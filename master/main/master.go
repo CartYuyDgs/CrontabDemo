@@ -33,6 +33,10 @@ func main() {
 		goto ERR
 	}
 
+	if err = master.InitWorkerMgr(); err != nil {
+		goto ERR
+	}
+
 	if err = master.InitLogManger(); err != nil {
 		goto ERR
 	}

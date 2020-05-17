@@ -146,3 +146,7 @@ func BuildJobExecuteInfo(jobScjedulePlan *JobSchdulePlan) (jobExecuteInfo *JobEx
 	jobExecuteInfo.CancelCtx, jobExecuteInfo.CancleFunc = context.WithCancel(context.TODO())
 	return
 }
+
+func ExtractWorkerIP(regKey string) string {
+	return strings.TrimPrefix(regKey, Jobworker)
+}
